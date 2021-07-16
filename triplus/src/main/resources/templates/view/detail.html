@@ -1,0 +1,296 @@
+<html lang="en"
+	  xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="layout/common_layout">
+
+<div layout:fragment="content">
+	<section class="ftco-section contact-section ftco-degree-bg">
+		<br>
+		<div class="container">
+			<div class="row d-flex contact-info">
+				<div class="row col-md-12 mb-3">
+					<h2 th:text="${item.placeName}" style="font-weight: bold; padding-left: 15px;"></h2>
+					<input type="hidden" id="content_id" name="content_id" th:value="${content_id}">
+					<input type="hidden" id="mapX" th:value="${item.mapX}">
+					<input type="hidden" id="mapY" th:value="${item.mapY}">
+					<button th:if="${user}" type="button" id="like" class="btn btn-primary ml-3 mb-2" style="font-weight: bold;">
+						찜하기
+					</button>
+					<div>
+						<input type="hidden" id="likedCounts" th:value="${like.liked}">
+						<span><i class="fas fa-heart fa-lg mt-3 ml-3 text-primary" id="heart" th:text="' ' + ${like.liked}"></i></span>
+					</div>
+				</div>
+
+				<div class="col-md-4">
+					<p style="font-weight: bold;"><span>Address :</span> <span th:text="${item.addr1}"></span></p>
+				</div>
+				<div class="col-md-4">
+					<p style="font-weight: bold;"><span>Phone :</span> <a href="#" th:text="${item.tel}"></a></p>
+				</div>
+				<div class="col-md-4">
+					<p style="font-weight: bold;"><span>Website :</span> <span th:remove="tag" th:utext="${item.homepage}"></span></p>
+				</div>
+
+			</div>
+
+			<hr>
+
+				<div class="row block-9">
+					<div class="col-md-8">
+						<div class="row">
+							<th:block th:each="imageUrl : ${item.imageUrls}">
+								<div class="col-md-6 col-lg-4 ftco-animate fadeInUp ftco-animated">
+									<div class="destination">
+										<div href="#" class="img img-2 d-flex justify-content-center align-items-center" th:style="'background:url(' + ${imageUrl} + '); background-size: cover; background-repeat: no-repeat;'">
+										</div>
+									</div>
+								</div>
+							</th:block>
+						</div>
+
+						<div class="overview">
+							<div th:remove="tag" th:utext="${item.overview}"></div>
+						</div>
+
+						<!-- Comments	-->
+
+						<div class="pt-5">
+							<!-- comment 개수-->
+							<h3 class="mb-5">
+								<span id="comment_cnt"  th:text="${#lists.isEmpty(reviews)} ? 0 : ${#lists.size(reviews)}"></span>
+								Comments
+							</h3>
+
+							<ul class="comment-list">
+								<th:block th:each="review : ${reviews}">
+									<li class="comment">
+										<div class="vcard bio">
+											<i class="fas fa-user p-2" aria-hidden="true" th:style="${user.id == review.user.id} ? 'font-size: 50px;color: #b4e67e' : 'font-size: 50px'"></i>
+										</div>
+										<div class="comment-body">
+											<input type="hidden" id="review_id" th:value="${review.id}">
+											<span th:if="${user.id == review.user.id}" th:utext="${review.title} + '  ' + '<i class=\'fas fa-trash review_del\'></i>'"></span>
+											<span th:unless="${user.id == review.user.id}" th:utext="${review.title}"></span>
+											<div class="meta" th:text="${review.regdate}"></div>
+											<p th:text="${review.content}"></p>
+										</div>
+									</li>
+								</th:block>
+
+							</ul>
+							<!-- END comment-list -->
+
+						<div class="comment-form-wrap pt-5">
+							<h3 class="mb-5">리뷰 작성하기</h3>
+							<form th:action="@{/register_review}" class="p-5 bg-light" method="post">
+								<div class="form-group">
+									<label for="message">Message</label>
+									<textarea name="content" id="message" cols="30" rows="5" style="width:100%" class="form-control"></textarea>
+								</div>
+								<div class="form-group text-right">
+									<input type="submit" value="등록" class="btn btn-primary" style="font-weight: bold;">
+								</div>
+								<input type="hidden" name="content_id" th:value="${content_id}">
+							</form>
+						</div>
+
+					</div>
+
+				</div>
+
+
+					<div class="col-md-4">
+						<div id="map" style="width:400px;height:400px;" class="m-3"></div>
+
+						<div class="sidebar ftco-animate fadeInUp ftco-animated pt-5">
+							<div class="ftco-animate fadeInUp ftco-animated">
+								<h3 class="p-2" style="font-weight: bold;">인근 명소</h3>
+
+								<th:block th:each="place : ${recommendPlaces_attraction}">
+									<th:block th:if="${place.imageUrl}">
+										<div class="col-12 ftco-animate fadeInUp ftco-animated">
+											<div class="block-21 mb-4 d-flex">
+												<a class="blog-img mr-4" th:style="'background:url(' + ${place.imageUrl} + '); background-size: cover; background-repeat: no-repeat;'"></a>
+												<div class="text">
+													<h3 class="heading"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.placeName}"></a></h3>
+													<p th:text="${place.addr1}"></p>
+												</div>
+											</div>
+										</div>
+									</th:block>
+								</th:block>
+
+							</div>
+
+							<div class="ftco-animate fadeInUp ftco-animated pt-5">
+								<h3 class="p-2" style="font-weight: bold;">인근 음식점</h3>
+								<th:block th:each="place : ${recommendPlaces_food}">
+									<th:block th:if="${place.imageUrl}">
+										<div class="col-12 ftco-animate fadeInUp ftco-animated">
+											<div class="block-21 mb-4 d-flex ">
+												<a class="blog-img mr-4" th:style="'background:url(' + ${place.imageUrl} + '); background-size: cover; background-repeat: no-repeat;'"></a>
+												<div class="text">
+													<h3 class="heading"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.placeName}"></a></h3>
+													<p th:text="${place.addr1}"></p>
+												</div>
+											</div>
+										</div>
+									</th:block>
+								</th:block>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+	</section>
+
+
+	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=bc432fd045ad14beed4b716d3e34e429"></script>
+	<script th:inline="javascript">
+
+		$(document).ready(function(){
+			var mapX = $("#mapX").val();
+			var mapY = $("#mapY").val();
+
+			var mapContainer = document.getElementById('map'),
+			mapOption = {
+				center: new kakao.maps.LatLng(mapY, mapX),
+				level: 3
+			};
+
+			var map = new kakao.maps.Map(mapContainer, mapOption);
+
+			var markerPosition  = new kakao.maps.LatLng(mapY, mapX);
+
+			var marker = new kakao.maps.Marker({
+				position: markerPosition
+			});
+
+			marker.setMap(map);
+
+			var iwContent = '<div style="padding:5px;">'+ $(".contact-info").find("h2").text() +' <br><a href="https://map.kakao.com/link/map/'+ $(".contact-info").find("h2").text() + ',' + mapY + ',' + mapX + '" style="color:blue" target="_blank">큰지도보기</a> <a href="https://map.kakao.com/link/to/'+ $(".contact-info").find("h2").text() +',' + mapY + ',' + mapX + '" style="color:blue" target="_blank">길찾기</a></div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+				iwPosition = new kakao.maps.LatLng(mapY, mapX);
+
+
+			var infowindow = new kakao.maps.InfoWindow({
+				position : iwPosition,
+				content : iwContent
+			});
+
+			infowindow.open(map, marker);
+
+			var contentId = $("#content_id").val();
+			var messageDTO={
+				content_id: contentId
+			};
+
+			$(".comment")
+			.mouseover(function() {
+				$(this).find(".review_del").css("font-size", "20px");
+				$(this).find(".review_del").css("color", "#f85959");
+			})
+			.mouseout(function() {
+				$(this).find(".review_del").css("font-size", "14px");
+				$(this).find(".review_del").css("color", "#000000");
+			});
+
+			$(".review_del")
+			.mousedown(function(){
+				$(this).css("font-size", "16px");
+			})
+			.mouseup(function(){
+				$(this).css("font-size", "20px");
+			});
+
+
+			$(".review_del").click(function(){
+				if(confirm("리뷰를 삭제하시겠습니까 ?") == false){
+					return;
+				}
+
+				var commentCnt = $("#comment_cnt").text();
+				var id = $(this).parent().parent().find('#review_id').val();
+				console.log(id);
+
+				$.ajax({
+				url: "/detail/remove",
+				data: {id:id},
+				type:"get",
+				dataType:"json",
+				contentType: 'application/text; charset=UTF-8',
+				success: function(response){
+					console.log('성공');
+					console.log(response);
+				},
+				error: function (response) {
+					console.log('에러');
+					console.log(response);
+				}
+				});
+
+				$(this).parent().parent().parent().remove();
+				$("#comment_cnt").text(--commentCnt);
+			});
+
+
+			$("#like").click(function(){
+				if($("#like").text() == '이미 찜했음!'){
+					if(confirm("찜을 해제할까요?")){
+						$.ajax({
+							url: "/detail/dislike",
+							data: messageDTO,
+							type:"get",
+							dataType:"json",
+							success: function(response){
+								console.log(response);
+								if(response['result']){
+									$("#like").text('찜하기');
+									$("#heart").text(' ' + (parseInt($("#heart").text()) - 1));
+								}
+								else{
+									$("#like").text('찜 해제 오류!');
+								}
+							},
+							error: function (response) {
+								console.log(response);
+								$("#like").text('찜 해제 오류!');
+							}
+						});
+
+					}
+					return;
+				}
+
+				$.ajax({
+				url: "/detail/like",
+				data: messageDTO,
+				type:"get",
+				dataType:"json",
+				success: function(response){
+					console.log(response);
+					if(response['result']){
+						$("#like").text	('찜했음!');
+						$("#heart").text(' ' + (parseInt($("#likedCounts").val())+1));
+					}
+					else{
+						$("#like").text('이미 찜했음!');
+					}
+				},
+				error: function (response) {
+					console.log(response);
+					$("#like").text('찜오류!');
+				}
+				});
+
+			});
+
+			var width = $($("#map").find("div:first").find("div:first").find("div").get(7)).css('width');
+			$($("#map").find("div:first").find("div:first").find("div").get(7)).css('width', parseInt(width)+10);
+		});
+	</script>
+</div>
+</html>

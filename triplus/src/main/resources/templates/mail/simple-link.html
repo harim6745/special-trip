@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div>
+        <h2>안녕하세요.</h2>
+        <p th:text="${message}" style="font-weight: bold;"></p>
+        <a th:href="${host+link}" th:text="${linkName}">Link</a>
+        <p style="font-weight: bold;">링크가 동작하지 않는 경우에는 아래 URL을 웹브라우저에 복사하여 붙여 넣으십시오.</p>
+        <small th:text="${host+link}"></small>
+    </div>
+<footer>
+    <small>Triplus 2021</small>
+</footer>
+</body>
+</html>

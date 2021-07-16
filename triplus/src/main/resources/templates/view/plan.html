@@ -1,0 +1,394 @@
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layout/common_layout">
+
+<div layout:fragment="content">
+    <section class="ftco-section bg-light">
+        <br>
+        <div class="container mt-5">
+            <div class="col-md-12 pl-0">
+                <h2 class="mb-4" style="font-weight: bold;"><strong>나의 일정 만들기</strong></h2>
+            </div>
+
+            <div class="form-group">
+                <div class="row" style="padding-left: 15px;">
+
+                    <input th:value="${plan} ? ${plan.name} : ''" type="text" class="form-control fas mb-2 mr-sm-2" style="width: 349.99px;" id="plan_title" placeholder=" &#xf304;">
+                    <input th:value="${plan} ? ${plan.id} : 0" id="plan_id" type="hidden">
+
+                    <button type="button" id="save-all-btn" class="btn btn-primary mb-2 mr-sm-2">
+                        <i class="far fa-save fa-2x"></i>
+                    </button>
+                </div>
+            </div>
+
+            <th:block th:unless="${plan}">
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-4 day" style="display: none !important">
+                            <h2 class="text-center">Day</h2>
+                            <div class="card" style="height: 500px">
+                                <div style="height:450px; overflow-y: scroll;" class="mt-4">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4 day">
+                            <h2 class="text-center big-div">DAY<i class="fas fa-trash big-del day_del_btn" style="margin-left: 5px;"></i></h2>
+                            <div class="card" style="height: 500px">
+                                <div style="height:450px; overflow-y: scroll;" class="mt-4">
+                                    <div class="card-body">
+                                        <div class="block-21 mb-4 mt-4 d-flex place small-div" style="display: none !important">
+                                        </div>
+                                        <div class="col text-center">
+                                            <button type="button" class="btn btn-default mb-2 mr-sm-2 add_btn" data-toggle="modal" data-target="#myModal">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
+
+            <th:block th:if="${plan}">
+                <div class="form-group mt-5">
+                    <div class="row">
+                        <div class="col-4 day card-del" style="display: none !important">
+                        </div>
+
+                        <th:block th:each="day : ${plan.days}">
+                            <div class="col-4 day">
+                                <h2 class="text-center big-div">DAY<i class="fas fa-trash big-del day_del_btn" style="margin-left: 5px;"></i></h2>
+                                <div class="card" style="height: 500px">
+                                    <div style="height:450px; overflow-y: scroll;" class="mt-4">
+                                        <div class="card-body">
+                                            <div class="block-21 mb-4 mt-4 d-flex place small-div" style="display: none !important">
+                                            </div>
+
+                                            <th:block th:each="place : ${day.places}">
+                                                <div class="block-21 mb-4 mt-4 d-flex place small-div">
+                                                    <input type="hidden" class="contentId" th:value="${place.contentId}">
+                                                    <a class="blog-img mr-4" th:style="'background:url(' + ${place.thumbnailUrl} + '); background-size: cover; background-repeat: no-repeat;'"></a>
+                                                    <div class="text">
+                                                        <h3 class="heading"><a th:href="'/detail?content_id=' + ${place.contentId}" th:text="${place.name}"></a><i class="fas fa-trash small-del" style="margin-left: 5px;"></i></h3>
+                                                        <p th:text="${place.addr}"></p>
+                                                    </div>
+                                                </div>
+                                            </th:block>
+
+                                            <div class="col text-center">
+                                                <button type="button" class="btn btn-default mb-2 mr-sm-2 add_btn" data-toggle="modal" data-target="#myModal">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </th:block>
+
+                    </div>
+                </div>
+            </th:block>
+
+
+
+            <div class="col text-center">
+                <button type="button" id="card_add" class="btn btn-primary card_add">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!- modal -->
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header" align="center">
+                    <!-- modal search -->
+                    <div style="padding: 0px 0px 0px 70px;" align="center">
+                        <input class="typeahead fas modal-search" type="text" id="search" onkeyup="filter()" placeholder=" &#xf002;"/>
+                    </div>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="ftco-animate fadeInUp ftco-animated">
+
+
+                        <div style="height:500px; overflow-y: scroll;">
+
+                            <!-- 카드들 담기는 곳-->
+                            <div class="placeList">
+                                <th:block th:each="place : ${placeList}">
+                                    <div class="col-12 ftco-animate fadeInUp ftco-animated">
+                                        <div class="block-21 mb-4 d-flex placeBox">
+                                            <input type="hidden" id="contentId" th:value="${place.contentId}">
+                                            <a class="blog-img mr-4 placeImage" th:style="'background:url(' + ${place.thumbnailUrl} + ');background-size: cover;'"></a>
+                                            <div class="text">
+                                                <h3 class="heading placeTitle" th:text="${place.name}"></h3>
+                                                <p class="placeAddr" th:text="${place.addr1}"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th:block>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        $(document).ready(function(){   // ready 시작
+
+            $('.big-del').click(function(){
+                    $(this).parent().parent().remove();
+            });
+
+            $('.small-del').click(function(){
+                    $(this).parent().parent().parent().remove();
+            });
+
+            $("#search").mouseover(function() {
+                $(this).css("border","solid 2px #f85959");
+            });
+
+            $(".small-del").hide();
+            $(".small-div").mouseenter(function(){
+                $(this).find(".small-del").css("color", "#f85959");
+                $(this).find(".small-del").show();
+            }).mouseleave(function(){
+                $(this).find(".small-del").hide();
+            });
+
+            $(".big-del").hide();
+
+            $(".big-div").mouseenter(function(){
+                $(this).css("color", "#f85959");
+                $(this).find(".big-del").show();
+            }).mouseleave(function(){
+                $(this).css("color", "black");
+                $(this).find(".big-del").hide();
+            });
+
+            make_place = function(url, title, addr, content_id){
+
+                return '<div class="block-21 mb-4 mt-4 d-flex place small-div">' +
+                '   <input type="hidden" class="contentId" value="'+ content_id +'">' +
+                '    <a class="blog-img mr-4" style="background:url(' + url + '); background-size: cover; background-repeat: no-repeat;"></a>' +
+                '    <div class="text">' +
+                '    <h3 class="heading"><a href="/detail?content_id=' + content_id + '">' + title + '</a><i class="fas fa-trash small-del" style="margin-left: 5px;"></i></h3>' +
+                '        <p>' + addr + '</p>' +
+                '    </div>' +
+                '</div>';
+            }
+
+            var card = `<div class="col-4 day">
+                            <h2 class="text-center big-div">DAY<i class="fas fa-trash big-del" style="margin-left: 5px;"></i></h2>
+                            <div class="card" style="height: 500px">
+                                <div style="height:450px; overflow-y: scroll;" class="mt-4">
+                                    <div class="card-body">
+
+                                        <div class="block-21 mb-4 mt-4 d-flex place small-div" style="display: none !important">
+                                        </div>
+
+                                        <div class="col text-center">
+                                            <button type="button" class="btn btn-default mb-2 mr-sm-2 add_btn" data-toggle="modal" data-target="#myModal">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        `
+
+            add_btn_click = function(){
+                var add_place_btn = $(this);
+                var last_place = add_place_btn.parent().parent().find(".place:last");
+
+                last_place.addClass('last-place');
+            }
+
+
+            $(".add_btn").unbind().click(add_btn_click);
+
+
+            $(".placeBox").click(function(){
+                var imgUrl = $(this).find("a").css('background');
+                var title = $(this).find(".text").find("h3").text();
+                var addr = $(this).find(".text").find("p").text();
+                var content_id = $(this).find("#contentId").val();
+                // -------------------------------
+                console.log(content_id);
+                // -------------------------------
+
+                var last_place = $(".last-place");
+                imgUrl = imgUrl.replace(/.*\s?url\([\'\"]?/, '').replace(/[\'\"]?\).*/, '');
+
+
+                $('#myModal').modal('hide');
+
+
+                last_place.after(make_place(imgUrl, title, addr, content_id));
+                last_place.removeClass('last-place');
+
+                $(".small-del").hide();
+                $(".small-div").unbind().mouseenter(function(){
+                    $(this).find(".small-del").css("color", "#f85959");
+                    $(this).find(".small-del").show();
+                }).mouseleave(function(){
+                    $(this).find(".small-del").hide();
+                });
+
+                $(".big-del").hide();
+
+                $(".big-div").unbind().mouseenter(function(){
+                    $(this).css("color", "#f85959");
+                    $(this).find(".big-del").show();
+                }).mouseleave(function(){
+                    $(this).css("color", "black");
+                    $(this).find(".big-del").hide();
+                });
+
+
+                $('.small-del').unbind().click(function(){
+                    $(this).parent().parent().parent().remove();
+                });
+            });
+
+
+            $(".card_add").click(function(){
+
+                $(".day:last").after(card);
+                //$(".last-place").removeClass('last-place');
+                $(".add_btn").unbind().click(add_btn_click);
+
+                $('.big-del').unbind().click(function(){
+                    $(this).parent().parent().remove();
+                });
+
+                $(".small-del").hide();
+                $(".big-del").hide();
+
+                $(".small-div").mouseenter(function(){
+                    $(this).find(".small-del").show();
+                });
+                $(".small-div").mouseleave(function(){
+                    $(this).find(".small-del").hide();
+                });
+
+                 $(".big-div").mouseenter(function(){
+                    $(this).find(".big-del").show();
+                });
+                $(".big-div").mouseleave(function(){
+                    $(this).find(".big-del").hide();
+                });
+
+
+            });
+
+
+            $('#save-all-btn').click(function(){
+                day = [];
+
+                dayList = $('.day').toArray().map(function(day){
+                    var tmp = [];
+
+                    $(day).find('.place').toArray().forEach(d => {
+                        if(!$(d).find('a').css('background')) return;
+
+                        var title = $(d).find('.text').find('.heading').text();
+                        var addr = $(d).find('.text').find('p').text();
+                        var imgUrl = $(d).find('a').css('background').replace(/.*\s?url\([\'\"]?/, '').replace(/[\'\"]?\).*/, '');
+                        var contentId = $(d).find('.contentId').val();
+                        var jsonObj = JSON.parse('{ "title": "' + title + '", "imgUrl": "' + imgUrl +'", "addr":"' + addr + '", "content_id":"' + contentId + '"}');
+
+                        tmp.push(jsonObj);
+                    });
+
+                    return tmp;
+                });
+
+                if(dayList.length < 1){
+                    alert('일정을 만들어주세요');
+                    return;
+                }
+
+                if(dayList[1].length < 1 || $('#plan_title').val().trim() == ""){
+                    alert('일정 이름과 일정을 모두 입력해주세요');
+                    return;
+                }
+
+                for(ii=1; ii<dayList.length; ++ii){
+                    if(dayList[ii].length < 1){
+                        alert('빈 일정이 있습니다');
+                        return;
+                    }
+                }
+
+
+                jsonObj = {
+                    "plan" : $('#plan_title').val(),
+                    "planId" : $('#plan_id').val(),
+                    "dayList": dayList.slice(1)
+                };
+
+                $.ajax({
+                    url: '/plan/save',
+                    type: 'post',
+                    dataType: 'json',
+                    data: JSON.stringify({plan:$('#plan_title').val(), planId:$('#plan_id').val(), dayList:dayList.slice(1)}),
+                    contentType: 'application/json; charset=UTF-8',
+                    success: function(response) {
+                        console.log(response + '로 설정 완료!');
+                        $('#plan_id').val(response);
+                    }
+                }).done(function(response) {
+                    console.log('done!');
+                    alert("저장완료 !");
+                });
+
+            });
+
+        });
+
+    </script>
+
+    <script>
+        function filter() {
+            let search = document.getElementById("search").value.toLowerCase();
+            let placeList = document.getElementsByClassName("placeList")[0];
+            console.log(placeList.children);
+
+            let placeTitle = placeList.getElementsByClassName("placeTitle");
+
+            for (let i = 0; i < placeList.children.length; i++) {
+                if (placeTitle[i].innerHTML.toLowerCase().indexOf(search) != -1) {
+                    placeTitle[i].parentNode.parentNode.parentNode.style.display = "flex"
+                } else {
+                    placeTitle[i].parentNode.parentNode.parentNode.style.display = "none"
+                }
+            }
+        }
+    </script>
+
+</div>
+</html>

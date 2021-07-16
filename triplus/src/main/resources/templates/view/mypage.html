@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
+      layout:decorate="layout/common_layout">
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<div layout:fragment="content">
+
+    <body>
+    <section class="ftco-section contact-section ftco-degree-bg">
+    <br>
+        <div class="container">
+            <div class="row">
+
+                <ul class="nav nav-tabs flex-column col-3" role="tablist">
+                    <a class="active text-center" th:href="@{/mypage}"><i class="fas fa-user-circle fa-10x mb-2 mr-sm-2"></i></a>
+
+                    <p class="text-center" th:text="${user.nickName} + '님 환영합니다'" style="font-weight: bold;"></p>
+
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#myPlan" style="font-weight: bold; font-size: 18px"><i class="far fa-calendar-alt fa-lg mb-2 mr-sm-2"></i>내 일정 보기</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#myReview" style="font-weight: bold; font-size: 18px"><i class="far fa-comment fa-lg mb-2 mr-sm-2"></i>내 리뷰 보기</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#myLike" style="font-weight: bold; font-size: 18px"><i class="fas fa-heart fa-lg mb-2 mr-sm-2"></i>찜 목록</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#myInfo" style="font-weight: bold; font-size: 18px"><i class="fas fa-cog fa-lg mb-2 mr-sm-2"></i>내 정보 관리</a>
+                    </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content col-9">
+
+                    <!-- myPlan -->
+                    <div id="myPlan" class="container tab-pane active"><br>
+                        <div class="content">
+                            <div class="col-md-12 text-center">
+                                <h2 class="mb-4" style="font-weight: bold;"><i class="far fa-calendar-alt"></i> 내 일정 보기</h2>
+                            </div>
+
+                            <div class="row">
+                                <th:block th:each="plan : ${planList}">
+                                    <div class="col-md-4 d-flex ftco-animate fadeInUp ftco-animated planCard" data-toggle="modal" data-target="#myModal">
+                                        <input type="hidden" class="plan_id" th:value="${plan.id}">
+                                        <div class="blog-entry align-self-stretch" style="width:300px">
+                                            <a class="block-20" th:style="'background:url(' + ${plan.mainImg} + '); background-size: cover; background-repeat: no-repeat;'"></a>
+                                            <div class="text p-4 d-block">
+                                                <h4 class="mb-4 planTitle" style="font-weight: bold; color: black;"><a th:text="${plan.name}"></a></h4>
+                                                <h6><span class="tag" th:text="${(plan.dayCounts)-1} + '박 '" style="color: black;"></span>
+                                                    <span class="tag" th:text="${plan.dayCounts} + '일 일정'" style="color: black;"></span></h6>
+                                                <div class="meta">
+                                                    <div><a th:text="${plan.user.nickName}"></a></div>
+                                                </div>
+                                                <div class="planModify" style="text-align : right;">
+                                                    <a th:href="'/plan?plan_id=' + ${plan.id}" style="font-weight: bold;">수정</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th:block>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- myReview -->
+                    <div id="myReview" class="container tab-pane fade"><br>
+                        <div class="content">
+                            <div class="col-md-12 text-center">
+                                <h2 class="mb-4" style="font-weight: bold;"><i class="far fa-comment"></i> 내 리뷰 보기</h2>
+                            </div>
+
+                            <!-- count my reviews -->
+                            <div class="section-header section-label" style="font-weight: bold;">
+                                <span id="review_cnt" class="section-label" th:text="${#lists.isEmpty(reviewList)} ? 0 : ${#lists.size(reviewList)}"></span>
+                                개의 리뷰
+                            </div>
+
+                            <!-- review grid -->
+                            <form th:action="@{/delete_review}" method="post" name="reviewForm">
+                                <div class="row grid-view">
+                                    <th:block th:each="review : ${reviewList}">
+
+                                        <div class="col-12 col-md-6">
+                                            <div class="review_list mb-3 review-frame">
+                                                <a class="media review-quote-item" th:href="'/detail?content_id=' + ${review.place.contentId}">
+
+                                                    <div class="media-object" th:style="'background:url(' + ${review.place.thumbnailUrl} + ');'"></div>
+                                                    <div class="media-body text-truncate">
+                                                        <h5 class="review_place_name media-title text-truncate" th:text="${review.place.name}"></h5>
+                                                        <div class="media-text text-truncate" th:text="${review.place.addr}"></div>
+                                                    </div>
+                                                </a>
+                                                <div class="review-body">
+                                                    <a class="review-link" th:href="'/detail?content_id=' + ${review.place.contentId}">
+                                                        <input type="hidden" class="review_id" name="review_id" th:value="${review.id}">
+                                                        <blockquote class="review_place_content" th:text="${review.content}"></blockquote>
+                                                    </a>
+                                                </div>
+                                                <div class="review-footer d-flex align-items-center justify-content-between">
+
+                                                    <time class="review_place_name text-secondary" th:text="${review.regdate}"></time>
+                                                    <button type="button" class="btn-rev-del" style="font-weight: bold;">삭제</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th:block>
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- myLike -->
+                    <div id="myLike" class="container tab-pane fade"><br>
+                        <div class="content">
+                            <div class="col-md-12 text-center">
+                                <h2 class="mb-4" style="font-weight: bold;"><i class="fas fa-heart"></i> 찜목록</h2>
+                            </div>
+                            <br>
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs nav-justified" role="tablist" style="font-weight: bold; font-size: 18px">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" href="#attraction">관광명소</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#food">음식점</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#shop">쇼핑</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#festival">축제</a>
+                                </li>
+                            </ul>
+
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div id="attraction" class="container tab-pane fade active show"><br>
+                                    <div class="row">
+                                        <th:block th:each="place : ${attractionList}">
+                                            <div class="col-md-4 d-flex ftco-animate fadeInUp ftco-animated">
+                                                <div class="blog-entry align-self-stretch" style="width:245px; height:440px">
+									<a th:href="@{/detail?content_id={id}(id=${place.contentId})}" class="block-20" th:style="'background:url(' + ${place.thumbnailUrl}">
+									</a>
+									<div class="text p-4 d-block">
+										<h3 class="heading mb-2" style="font-weight: bold;"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.name}"></a></h3>
+										<div><a th:text="${place.addr1}"></a></div>
+										<div class="meta" style="text-align : right;">
+											<div class="mt-4"><span><i class="fas fa-heart text-primary" th:text="' ' + ${place.liked}"></i></span></div>
+										</div>
+									</div>
+								</div>
+                                            </div>
+                                        </th:block>
+                                    </div>
+                                </div>
+
+                                <div id="food" class="container tab-pane fade"><br>
+                                    <div class="row">
+                                        <th:block th:each="place : ${foodList}">
+                                            <div class="col-md-4 d-flex ftco-animate fadeInUp ftco-animated">
+                                                <div class="blog-entry align-self-stretch" style="width:245px; height:440px">
+									<a th:href="@{/detail?content_id={id}(id=${place.contentId})}" class="block-20" th:style="'background:url(' + ${place.thumbnailUrl}">
+									</a>
+									<div class="text p-4 d-block">
+										<h3 class="heading mb-2" style="font-weight: bold;"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.name}"></a></h3>
+										<div><a th:text="${place.addr1}"></a></div>
+										<div class="meta" style="text-align : right;">
+											<div class="mt-4"><span><i class="fas fa-heart text-primary" th:text="' ' + ${place.liked}"></i></span></div>
+										</div>
+									</div>
+								</div>
+                                            </div>
+                                        </th:block>
+                                    </div>
+                                </div>
+
+                                <div id="shop" class="container tab-pane fade"><br>
+                                    <div class="row">
+                                        <th:block th:each="place : ${shopList}">
+                                            <div class="col-md-4 d-flex ftco-animate fadeInUp ftco-animated">
+                                                <div class="blog-entry align-self-stretch" style="width:245px; height:440px">
+									<a th:href="@{/detail?content_id={id}(id=${place.contentId})}" class="block-20" th:style="'background:url(' + ${place.thumbnailUrl}">
+									</a>
+									<div class="text p-4 d-block">
+										<h3 class="heading mb-2" style="font-weight: bold;"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.name}"></a></h3>
+										<div><a th:text="${place.addr1}"></a></div>
+										<div class="meta" style="text-align : right;">
+											<div class="mt-4"><span><i class="fas fa-heart text-primary" th:text="' ' + ${place.liked}"></i></span></div>
+										</div>
+									</div>
+								</div>
+                                            </div>
+                                        </th:block>
+                                    </div>
+                                </div>
+
+
+                                <div id="festival" class="container tab-pane fade"><br>
+                                    <div class="row">
+                                        <th:block th:each="place : ${festivalList}">
+                                            <div class="col-md-4 d-flex ftco-animate fadeInUp ftco-animated">
+                                                <div class="blog-entry align-self-stretch" style="width:245px; height:440px">
+									<a th:href="@{/detail?content_id={id}(id=${place.contentId})}" class="block-20" th:style="'background:url(' + ${place.thumbnailUrl}">
+									</a>
+									<div class="text p-4 d-block">
+										<h3 class="heading mb-2" style="font-weight: bold;"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.name}"></a></h3>
+										<div><a th:text="${place.addr1}"></a></div>
+										<div class="meta" style="text-align : right;">
+											<div class="mt-4"><span><i class="fas fa-heart text-primary" th:text="' ' + ${place.liked}"></i></span></div>
+										</div>
+									</div>
+								</div>
+                                            </div>
+                                        </th:block>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="myInfo" class="container tab-pane fade"><br>
+                        <div class="content">
+                            <div class="col-md-12 text-center">
+                                <h2 class="mb-4" style="font-weight: bold;"><i class="fas fa-cog"></i> 내 정보 관리</h2>
+                            </div>
+                            <form th:action="@{/update_info}" method="post" name="updateForm">
+
+                                <!-- 원본
+                                <table width="500" height="500" align="center" rules="none">
+                                    <tr align="center">
+                                        <td width="20%" style="font-weight: bold">Email</td>
+                                        <td width="80%"><input type="text" th:value="${user.email}" name="email" readonly></td>
+                                    </tr>
+
+                                    <tr align="center">
+                                        <td width="20%" style="font-weight: bold">Nickname</td>
+                                        <td width="80%"><input type="text" th:value="${user.nickName}" id="nickName" name="nickName" required=""></td>
+                                    </tr>
+
+                                    <tr align="center">
+                                        <td colspan="2">
+                                            <button class="btn btn-primary mb-2 mr-sm-2" type="button" data-toggle="modal" data-target="#changePasswordModal" style="font-weight: bold;">
+                                                비밀번호 변경
+                                            </button>
+                                        </td>
+                                    </tr>
+
+                                    <tr align="center">
+                                        <td colspan="2">
+                                            <button type="submit" id="save" name="save" class="btn btn-primary mb-2 mr-sm-2" style="font-weight: bold;">
+                                                수정
+                                            </button>
+                                            <button type="button" id="delete" class="btn btn-primary mb-2 mr-sm-2" data-toggle="modal" data-target="#deleteUser" style="font-weight: bold;">
+                                                탈퇴
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    -->
+
+                                    <!-- 테스트 -->
+                                    <div class="mypage-sec">
+                                        <div class="section first-sec">
+                                            <div class="row">
+                                                <div class="title title-sec" style="font-weight: bold;">Email</div>
+                                                <div class="value">
+                                                    <input type="text" th:value="${user.email}" name="email" readonly>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="row first-row">
+                                                <div class="title title-sec" style="font-weight: bold;">Nickname</div>
+                                                <div class="value">
+                                                    <input type="text" th:value="${user.nickName}" id="nickName" name="nickName" required="">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="section second-sec">
+                                            <button class="btn btn-primary mb-2 mr-sm-2" type="button" data-toggle="modal" data-target="#changePasswordModal" style="font-weight: bold;">
+                                                비밀번호 변경
+                                            </button>
+                                        </div>
+
+                                        <div class="section last-sec">
+                                            <div class="row last-row">
+                                                <button type="submit" id="save" name="save" class="btn btn-primary mb-2 mr-sm-2" style="font-weight: bold;">
+                                                    수정
+                                                </button>
+                                                <button type="button" id="delete" class="btn btn-secondary mb-2 mr-sm-2" data-toggle="modal" data-target="#deleteUser" style="font-weight: bold;">
+                                                    탈퇴
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </form>
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+    <!-- 삭제 확인 modal -->
+    <div class="modal fade" id="deleteUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header border-bottom-0">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-title text-center">
+                        <h4 style="font-weight: bold;">정말 탈퇴하시겠습니까?</h4>
+                    </div>
+                    <div class="d-flex flex-column text-center">
+                        <form th:action="@{/delete_user}" method="post">
+                            <div class="form-group"><br>
+                                <button type="submit" class="btn btn-primary mb-2 mr-sm-2" style="font-weight: bold;">확인</button>
+                                <button type="button" class="btn btn-primary mb-2 mr-sm-2" data-dismiss="modal" aria-label="Close" style="font-weight: bold;">취소</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 비밀번호 변경 modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header border-bottom-0">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-title text-center">
+                        <h4 style="font-weight: bold;">비밀번호 변경</h4>
+                    </div>
+                    <div class="d-flex flex-column text-center">
+                        <form action="#" method="post" name="changePasswordForm" novalidate>
+                            <div class="form-group">
+                                <input type="password" placeholder="현재 비밀번호" name="oldPw" id="oldPw"><br>
+                                <span class="error_next_box" id="pwMsg" style="color: red;"></span>
+                            </div>
+                            <div class="form-group">
+                                <input type="password" placeholder="새 비밀번호" name="newPw" id="newPw">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" placeholder="새 비밀번호 확인" name="newPwCheck" id="newPwCheck"><br>
+                                <span class="error_next_box" id="newPwMsg" style="color: red;"></span>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary mb-2 mr-sm-2" name="save_pw" id="save_pw" style="font-weight: bold;">확인</button>
+                                <button type="button" class="btn btn-primary mb-2 mr-sm-2" data-dismiss="modal" aria-label="Close" style="font-weight: bold;">취소</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- main modal -->
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h3 class="plan-title"><a></a></h3>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="ftco-animate fadeInUp ftco-animated">
+                        <div id="modalScroll" style="height: auto; overflow-y: scroll;">
+                            <div class="card bg-primary text-white" data-toggle="modal" data-target="#myDay" style="display: none !important;">
+                                <div class="card-body">
+                                    <a><span class="tag" style="font-weight: bold; font-size: 30px">Day</span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- sub modal -->
+    <div class="modal fade" id="myDay">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header text-center">
+                    <h3 class="day-title" style="font-weight: bold;"><a></a></h3>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="ftco-animate fadeInUp ftco-animated">
+                        <div style="height: auto; overflow-y: scroll;">
+
+                            <!-- place들 담기는 곳-->
+                            <div class="placeList">
+                                <div class="col-12 ftco-animate fadeInUp ftco-animated" id="placeScroll">
+                                    <div class="block-21 mb-4 d-flex placeBox" style="display: none !important;">
+                                        <a class="blog-img mr-4 placeImage"></a>
+                                        <div class="text">
+                                            <h3 class="heading placeTitle"></h3>
+                                            <p class="placeAddr"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <script th:inline="javascript">
+        $( document ).ready(function() {
+
+            let planObj;
+            let dayCnt;
+            let dayList;
+            let placeList;
+
+            const getDay = function (idx) {
+                return '<div class="card bg-primary text-white" data-toggle="modal" data-target="#myDay">\n' +
+                    '                                <div class="card-body text-center">\n' +
+                    '                                    <a><span class="tag" style="font-weight: bold; font-size: 30px">Day ' + idx + '</span></a>\n' +
+                    '                                </div>\n' +
+                    '                            </div>';
+            };
+
+            $(".planModify").on("click", function(e){
+                e.stopPropagation();
+            });
+
+
+            $(".planCard").click(function (){
+
+                $("#modalScroll").find(".card").remove();
+                $("#modalScroll").append('       <div class="card bg-primary text-white" data-toggle="modal" data-target="#myDay" style="display: none !important;">\n' +
+                    '                                <div class="card-body">\n' +
+                    '                                    <a><span class="tag" style="font-weight: bold; font-size: 30px">Day</span></a>\n' +
+                    '                                </div>\n' +
+                    '                            </div>\n');
+
+                let title = $(this).find(".planTitle").find("a").text();
+                let id = $(this).find(".plan_id").val();
+
+
+                $(".plan-title").find("a").text(title);
+
+
+                $.ajax({
+                    url: '/mypage/myplan',
+                    type: 'get',
+                    async: false,
+                    dataType: 'json',
+                    data: {"id": id},
+                    contentType: 'application/json; charset=UTF-8',
+                    success: function(res) {
+                        console.log(res);
+                        planObj = res;
+
+                        dayCnt = res['dayCounts'];
+                        dayList = res['days'];
+
+
+                        for (let d = 0; d < dayCnt; ++d) {
+                            $(".card:last").after(getDay(d + 1));
+                            console.log('day' + (d + 1) + '의 장소들');
+
+                            $(".card:last").unbind().click(function () {
+
+                                $(".day-title").text('Day' + (d+1));
+
+                                $("#placeScroll").find(".placeBox").remove();
+                                $("#placeScroll").append('                  <div class="block-21 mb-4 d-flex placeBox" style="display: none !important;">\n' +
+                                    '                                            <a class="blog-img mr-4"><img class="placeImage"/></a>\n' +
+                                    '                                            <div class="text">\n' +
+                                    '                                                <h3 class="heading placeTitle"></h3>\n' +
+                                    '                                                <p class="placeAddr" ></p>\n' +
+                                    '                                            </div>\n' +
+                                    '                                        </div>');
+
+
+                                placeList = dayList[d]['places'];
+
+                                for (let p = 0; p < placeList.length; ++p) {
+                                    console.log((p + 1) + '번째 장소');
+                                    console.log(placeList[p]);
+                                    console.log(placeList.length);
+
+
+                                    let img = placeList[p]['thumbnailUrl'];
+                                    let name = placeList[p]['name'];
+                                    let addr = placeList[p]['addr'];
+                                    let contentId = placeList[p]['contentId'];
+
+
+                                    $(".placeBox:last").after('                                    <div class="block-21 mb-4 d-flex placeBox">\n' +
+                                        '                                        <a class="blog-img mr-4 placeImage" style="background:url(' + img + '); background-size: cover;"></a>\n' +
+                                        '                                        <div class="text">\n' +
+                                        '                                            <a href="/detail?content_id=' + contentId +'"><h3 class="heading placeTitle">' + name + '</h3></a>\n' +
+                                        '                                            <p class="placeAddr">' + addr + '</p>\n' +
+                                        '                                        </div>\n' +
+                                        '                                    </div>');
+
+                                }
+
+                            });
+
+                        }
+                    }
+
+                }).done(function(response) {
+                    console.log('done!');
+                });
+
+                $(".card-body").unbind()
+                    .mouseover(function() {
+                        $(this).css("background-color", "#CE4A4AFF");
+                    })
+                    .mouseout(function() {
+                        $(this).css("background-color", "#F85959");
+                    });
+            });
+
+
+            $(".btn-rev-del").click(function(event){
+
+                console.log('리뷰 삭제?');
+                if (confirm("삭제하시겠습니까?")) {
+                    var reviewCnt = $("#review_cnt").text();
+                    var id = $(this).parent().parent().find('.review_id').val();
+                    console.log(id);
+
+                    $.ajax({
+                        url: "/mypage/remove",
+                        data: {id:id},
+                        type:"get",
+                        dataType:"json",
+                        contentType: 'application/text; charset=UTF-8',
+                        success: function(response){
+                            console.log('삭제 성공');
+                            console.log(response);
+                        },
+                        error: function (response) {
+                            console.log('에러');
+                            console.log(response);
+                        }
+                    });
+
+                    $(this).parent().parent().remove();
+                    $("#review_cnt").text(--reviewCnt);
+                }
+
+            });
+
+            $('#save').on('click', function(){
+                if(confirm("정말 수정하시겠습니까?") == true){
+                    alert("수정되었습니다.");
+                }
+                else{
+                    return false;
+                }
+            });
+
+
+            const getPwCheck= RegExp(/([a-zA-Z0-9].*[!,@,#,$,%,^,&,*,?,_,~])|([!,@,#,$,%,^,&,*,?,_,~].*[a-zA-Z0-9])/);
+            let chk1=false, chk2=false, chk3=false;
+
+
+            $('#oldPw').on('keyup', function(){
+
+                if($('#oldPw').val()===""){
+                    $('#pwMsg').html('<b>비밀번호는 필수 정보입니다.</b>');
+                    chk1 = false;
+                } else{
+                    const oldPw={"oldPw": $('#oldPw').val()};
+
+                    $.ajax({
+                        type: "post",
+                        url: "/mypage/checkPw",
+                        data: oldPw,
+                        datatype: "json",
+                        success: function(result){
+                            console.log(result);
+                            if(result === "pwConfirmOK"){
+                                $('#pwMsg').html('');
+                                chk1 = true;
+                            } else{
+                                $('#pwMsg').html('');
+                                chk1 = false;
+                            }
+                        },
+                        error: function(error){
+                            console.log("error: "+error);
+                        }
+                    });
+                }
+            });
+
+            $('#newPw').on('keyup', function(){
+                //비밀번호 공백 확인
+                if($('#newPw').val() === ""){
+                    $('#newPw').html('<b>비밀번호는 필수 정보입니다.</b>');
+                    chk2=false;
+                }
+
+                else if(!getPwCheck.test($("#newPw").val()) || $("#newPw").val().length < 8){
+                    $('#newPwMsg').html('<b>특수문자 포함 8자 이상 입력하세요</b>');
+                    chk2 = false;
+                } else{
+                    $('#newPwMsg').html('');
+                    chk2 = true;
+                }
+            });
+
+
+            $('#newPwCheck').on('keyup', function(){
+                if($("#newPwCheck").val() === ""){
+                    $("#newPwMsg").html('<b">비밀번호 확인은 필수 정보입니다.</b>');
+                    chk3=false;
+                } else if($("#newPw").val() != $("#newPwCheck").val()){
+                    $('#newPwMsg').html('<b>비밀번호가 일치하지 않습니다.</b>');
+                    chk3 = false;
+                } else {
+                    $('#newPwMsg').html('');
+                    chk3 = true;
+                }
+            });
+
+
+            $('#save_pw').click(function(e){
+                if(chk1 == false) {
+                    alert('현재 비밀번호가 틀렸습니다.');
+
+                } else if(chk2 == false){
+                    alert('비밀번호를 특수문자 포함 8자 이상으로 설정해야 합니다.');
+                } else if(chk3 == false){
+                    alert('새로운 비밀번호를 두 번 모두 입력해야 합니다. ');
+
+                } else if(chk1 && chk2 && chk3){
+                    var newPw = {"newPw": $("#newPw").val()};
+
+                    console.log(newPw);
+
+                    $.ajax({
+                        type: "post",
+                        url: "/mypage/change_password",
+                        dataType: "text",
+                        data: newPw,
+                        success: function(result){
+                            console.log("result: "+result);
+                            if(result === "changeSuccess"){
+                                alert('비밀번호가 변경되었습니다. 다시 로그인해주세요.');
+                                location.href="/logout";
+                            } else{
+                                alert('현재 비밀번호가 틀렸습니다.');
+                            }
+                        }
+                    });
+                } else{
+                    alert('입력정보를 다시 확인하세요.');
+                }
+            });
+
+        });
+
+    </script>
+
+    </body>
+</div>
+</html>

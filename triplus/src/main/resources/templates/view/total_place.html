@@ -1,0 +1,324 @@
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layout/common_layout">
+
+<div layout:fragment="content">
+    <section class="ftco-section bg-light">
+        <br>
+        <div class="container">
+
+            <div class="col-md-12 text-center">
+                <h2 class="mb-4" style="font-weight: bold;"><strong>지역별</strong> 여행지 추천</h2>
+            </div>
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs nav-justified" role="tablist" style="font-weight: bold">
+                <li class="nav-item">
+                    <a id="1" th:class="${cat} == '1' ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#all" style="font-size: 18px">ALL</a>
+                </li>
+                <li class="nav-item">
+                    <a id="2" th:class="${cat} == '2' ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#seoul" style="font-size: 18px">서울</a>
+                </li>
+                <li class="nav-item">
+                    <a id="3" th:class="${cat} == '3' ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#incheon" style="font-size: 18px">인천</a>
+                </li>
+                <li class="nav-item">
+                    <a id="4" th:class="${cat} == '4' ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#gyeonggi" style="font-size: 18px">경기</a>
+                </li>
+                <li class="nav-item">
+                    <a id="5" th:class="${cat} == '5' ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#busan" style="font-size: 18px">부산</a>
+                </li>
+                <li class="nav-item">
+                    <a id="6" th:class="${cat} == '6' ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#ulsan" style="font-size: 18px">울산</a>
+                </li>
+                <li class="nav-item">
+                    <a id="7" th:class="${cat} == '7' ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#daegu" style="font-size: 18px">대구</a>
+                </li>
+                <li class="nav-item">
+                    <a id="8" th:class="${cat} == '8' ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#gwangju" style="font-size: 18px">광주</a>
+                </li>
+                <li class="nav-item">
+                    <a id="9" th:class="${cat} == '9' ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#daejeon" style="font-size: 18px">대전</a>
+                </li>
+                <li class="nav-item">
+                    <a id="10" th:class="${cat} == '10' ? 'nav-link active' : 'nav-link'" data-toggle="tab" href="#jeju" style="font-size: 18px">제주</a>
+                </li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div id="all" th:class="${cat} == '1' ? 'container tab-pane active ' : 'container tab-pane fade'"><br>
+                    <div class="row d-flex">
+                        <th:block th:each="place : ${allPlaceList}">
+                                <div class="col-md-3 d-flex ftco-animate fadeInUp ftco-animated">
+                                    <div class="blog-entry align-self-stretch" style="width:245px; height:440px">
+									<a th:href="@{/detail?content_id={id}(id=${place.contentId})}" class="block-20" th:style="'background:url(' + ${place.thumbnailUrl} + ');background-size: cover; background-repeat: no-repeat;'">
+									</a>
+									<div class="text p-4 d-block">
+										<h3 class="heading mb-2" style="font-weight: bold;"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.name}"></a></h3>
+										<div><a th:text="${place.addr1}"></a></div>
+										<div class="meta" style="text-align : right;">
+											<div class="mt-4"><span><i class="fas fa-heart text-primary" th:text="' ' + ${place.liked}"></i></span></div>
+										</div>
+									</div>
+								</div>
+                                </div>
+                        </th:block>
+                    </div>
+                </div>
+                <div id="seoul" th:class="${cat} == '2' ? 'container tab-pane active' : 'container tab-pane fade'"><br>
+                    <div class="row d-flex">
+                        <th:block th:each="place : ${seoulPlaceList}">
+                            <th:block th:if="${place.areaCode} == '1'">
+                                <div class="col-md-3 d-flex ftco-animate fadeInUp ftco-animated">
+                                    <div class="blog-entry align-self-stretch" style="width:245px; height:440px">
+									<a th:href="@{/detail?content_id={id}(id=${place.contentId})}" class="block-20" th:style="'background:url(' + ${place.thumbnailUrl} + ');background-size: cover; background-repeat: no-repeat;'">
+									</a>
+									<div class="text p-4 d-block">
+										<h3 class="heading mb-2" style="font-weight: bold;"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.name}"></a></h3>
+										<div><a th:text="${place.addr1}"></a></div>
+										<div class="meta" style="text-align : right;">
+											<div class="mt-4"><span><i class="fas fa-heart text-primary" th:text="' ' + ${place.liked}"></i></span></div>
+										</div>
+									</div>
+								</div>
+                                </div>
+                            </th:block>
+                        </th:block>
+                    </div>
+                </div>
+                <div id="incheon" th:class="${cat} == '3' ? 'container tab-pane active show' : 'container tab-pane'"><br>
+                    <div class="row d-flex">
+                        <th:block th:each="place : ${incheonPlaceList}">
+                            <th:block th:if="${place.areaCode} == '2'">
+                                <div class="col-md-3 d-flex ftco-animate fadeInUp ftco-animated">
+                                    <div class="blog-entry align-self-stretch" style="width:245px; height:440px">
+									<a th:href="@{/detail?content_id={id}(id=${place.contentId})}" class="block-20" th:style="'background:url(' + ${place.thumbnailUrl} + ');background-size: cover; background-repeat: no-repeat;'">
+									</a>
+									<div class="text p-4 d-block">
+										<h3 class="heading mb-2" style="font-weight: bold;"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.name}"></a></h3>
+										<div><a th:text="${place.addr1}"></a></div>
+										<div class="meta" style="text-align : right;">
+											<div class="mt-4"><span><i class="fas fa-heart text-primary" th:text="' ' + ${place.liked}"></i></span></div>
+										</div>
+									</div>
+								</div>
+                                </div>
+                            </th:block>
+                        </th:block>
+                    </div>
+                </div>
+
+                <div id="gyeonggi" th:class="${cat} == '4' ? 'container tab-pane active show' : 'container tab-pane'"><br>
+                    <div class="row d-flex">
+                        <th:block th:each="place : ${gyeonggiPlaceList}">
+                            <th:block th:if="${place.areaCode} == '31'">
+                                <div class="col-md-3 d-flex ftco-animate fadeInUp ftco-animated">
+                                    <div class="blog-entry align-self-stretch" style="width:245px; height:440px">
+									<a th:href="@{/detail?content_id={id}(id=${place.contentId})}" class="block-20" th:style="'background:url(' + ${place.thumbnailUrl} + ');background-size: cover; background-repeat: no-repeat;'">
+									</a>
+									<div class="text p-4 d-block">
+										<h3 class="heading mb-2" style="font-weight: bold;"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.name}"></a></h3>
+										<div><a th:text="${place.addr1}"></a></div>
+										<div class="meta" style="text-align : right;">
+											<div class="mt-4"><span><i class="fas fa-heart text-primary" th:text="' ' + ${place.liked}"></i></span></div>
+										</div>
+									</div>
+								</div>
+                                </div>
+                            </th:block>
+                        </th:block>
+                    </div>
+                </div>
+
+                <div id="busan" th:class="${cat} == '5' ? 'container tab-pane active show' : 'container tab-pane'"><br>
+                    <div class="row d-flex">
+                        <th:block th:each="place : ${busanPlaceList}">
+                            <th:block th:if="${place.areaCode} == '6'">
+                                <div class="col-md-3 d-flex ftco-animate fadeInUp ftco-animated">
+                                    <div class="blog-entry align-self-stretch" style="width:245px; height:440px">
+									<a th:href="@{/detail?content_id={id}(id=${place.contentId})}" class="block-20" th:style="'background:url(' + ${place.thumbnailUrl} + ');background-size: cover; background-repeat: no-repeat;'">
+									</a>
+									<div class="text p-4 d-block">
+										<h3 class="heading mb-2" style="font-weight: bold;"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.name}"></a></h3>
+										<div><a th:text="${place.addr1}"></a></div>
+										<div class="meta" style="text-align : right;">
+											<div class="mt-4"><span><i class="fas fa-heart text-primary" th:text="' ' + ${place.liked}"></i></span></div>
+										</div>
+									</div>
+								</div>
+                                </div>
+                            </th:block>
+                        </th:block>
+                    </div>
+                </div>
+
+                <div id="ulsan" th:class="${cat} == '6' ? 'container tab-pane active show' : 'container tab-pane'"><br>
+                    <div class="row d-flex">
+                        <th:block th:each="place : ${ulsanPlaceList}">
+                            <th:block th:if="${place.areaCode} == '7'">
+                                <div class="col-md-3 d-flex ftco-animate fadeInUp ftco-animated">
+                                    <div class="blog-entry align-self-stretch" style="width:245px; height:440px">
+									<a th:href="@{/detail?content_id={id}(id=${place.contentId})}" class="block-20" th:style="'background:url(' + ${place.thumbnailUrl} + ');background-size: cover; background-repeat: no-repeat;'">
+									</a>
+									<div class="text p-4 d-block">
+										<h3 class="heading mb-2" style="font-weight: bold;"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.name}"></a></h3>
+										<div><a th:text="${place.addr1}"></a></div>
+										<div class="meta" style="text-align : right;">
+											<div class="mt-4"><span><i class="fas fa-heart text-primary" th:text="' ' + ${place.liked}"></i></span></div>
+										</div>
+									</div>
+								</div>
+                                </div>
+                            </th:block>
+                        </th:block>
+                    </div>
+                </div>
+
+                <div id="daegu" th:class="${cat} == '7' ? 'container tab-pane active show' : 'container tab-pane'"><br>
+                    <div class="row d-flex">
+                        <th:block th:each="place : ${daeguPlaceList}">
+                            <th:block th:if="${place.areaCode} == '4'">
+                                <div class="col-md-3 d-flex ftco-animate fadeInUp ftco-animated">
+                                    <div class="blog-entry align-self-stretch" style="width:245px; height:440px">
+									<a th:href="@{/detail?content_id={id}(id=${place.contentId})}" class="block-20" th:style="'background:url(' + ${place.thumbnailUrl} + ');background-size: cover; background-repeat: no-repeat;'">
+									</a>
+									<div class="text p-4 d-block">
+										<h3 class="heading mb-2" style="font-weight: bold;"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.name}"></a></h3>
+										<div><a th:text="${place.addr1}"></a></div>
+										<div class="meta" style="text-align : right;">
+											<div class="mt-4"><span><i class="fas fa-heart text-primary" th:text="' ' + ${place.liked}"></i></span></div>
+										</div>
+									</div>
+								</div>
+                                </div>
+                            </th:block>
+                        </th:block>
+                    </div>
+                </div>
+
+                <div id="gwangju" th:class="${cat} == '8' ? 'container tab-pane active show' : 'container tab-pane'"><br>
+                    <div class="row d-flex">
+                        <th:block th:each="place : ${gwangjuPlaceList}">
+                            <th:block th:if="${place.areaCode} == '5'">
+                                <div class="col-md-3 d-flex ftco-animate fadeInUp ftco-animated">
+                                    <div class="blog-entry align-self-stretch" style="width:245px; height:440px">
+									<a th:href="@{/detail?content_id={id}(id=${place.contentId})}" class="block-20" th:style="'background:url(' + ${place.thumbnailUrl} + ');background-size: cover; background-repeat: no-repeat;'">
+									</a>
+									<div class="text p-4 d-block">
+										<h3 class="heading mb-2" style="font-weight: bold;"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.name}"></a></h3>
+										<div><a th:text="${place.addr1}"></a></div>
+										<div class="meta" style="text-align : right;">
+											<div class="mt-4"><span><i class="fas fa-heart text-primary" th:text="' ' + ${place.liked}"></i></span></div>
+										</div>
+									</div>
+								</div>
+                                </div>
+                            </th:block>
+                        </th:block>
+                    </div>
+                </div>
+
+                <div id="daejeon" th:class="${cat} == '9' ? 'container tab-pane active show' : 'container tab-pane'"><br>
+                    <div class="row d-flex">
+                        <th:block th:each="place : ${daejeonPlaceList}">
+                            <th:block th:if="${place.areaCode} == '3'">
+                                <div class="col-md-3 d-flex ftco-animate fadeInUp ftco-animated">
+                                    <div class="blog-entry align-self-stretch" style="width:245px; height:440px">
+									<a th:href="@{/detail?content_id={id}(id=${place.contentId})}" class="block-20" th:style="'background:url(' + ${place.thumbnailUrl} + ');background-size: cover; background-repeat: no-repeat;'">
+									</a>
+									<div class="text p-4 d-block">
+										<h3 class="heading mb-2" style="font-weight: bold;"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.name}"></a></h3>
+										<div><a th:text="${place.addr1}"></a></div>
+										<div class="meta" style="text-align : right;">
+											<div class="mt-4"><span><i class="fas fa-heart text-primary" th:text="' ' + ${place.liked}"></i></span></div>
+										</div>
+									</div>
+								</div>
+                                </div>
+                            </th:block>
+                        </th:block>
+                    </div>
+                </div>
+
+                <div id="jeju" th:class="${cat} == '10' ? 'container tab-pane active show' : 'container tab-pane'"><br>
+                    <div class="row d-flex">
+                        <th:block th:each="place : ${jejuPlaceList}">
+                            <th:block th:if="${place.areaCode} == '39'">
+                                <div class="col-md-3 d-flex ftco-animate fadeInUp ftco-animated">
+                                    <div class="blog-entry align-self-stretch" style="width:245px; height:440px">
+									<a th:href="@{/detail?content_id={id}(id=${place.contentId})}" class="block-20" th:style="'background:url(' + ${place.thumbnailUrl} + ');background-size: cover; background-repeat: no-repeat;'">
+									</a>
+									<div class="text p-4 d-block">
+										<h3 class="heading mb-2" style="font-weight: bold;"><a th:href="@{/detail?content_id={id}(id=${place.contentId})}" th:text="${place.name}"></a></h3>
+										<div><a th:text="${place.addr1}"></a></div>
+										<div class="meta" style="text-align : right;">
+											<div class="mt-4"><span><i class="fas fa-heart text-primary" th:text="' ' + ${place.liked}"></i></span></div>
+										</div>
+									</div>
+								</div>
+                                </div>
+                            </th:block>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+
+                <div class="col-md-12 text-center d-flex justify-content-center">
+                    <div class="block-27 mb-4">
+                        <ul class="pagination" th:with="start=${T(Math).floor(allPlaceList.number/10)*10 + 1},
+                    last=(${start + 9 < allPlaceList.totalPages ? start + 9 : allPlaceList.totalPages})">
+
+                            <li>
+                                <a th:href="@{/total_place(page=1, cat=${cat})}" aria-label="First">
+                                    <span aria-hidden="true"><<</span>
+                                </a>
+                            </li>
+
+                            <li th:class="${allPlaceList.first} ? 'disabled'">
+                                <a th:href="${allPlaceList.first} ? '#' :@{/total_place(page=${allPlaceList.number}, cat=${cat})}" aria-label="Previous">
+                                    <span aria-hidden="true">&lt;</span>
+                                </a>
+                            </li>
+
+                            <li th:each="page: ${#numbers.sequence(start, last)}" th:class="${page == allPlaceList.number + 1} ? 'active'">
+                                <a th:text="${page}" th:href="@{/total_place(page=${page}, cat=${cat})}"></a>
+                            </li>
+
+                            <li th:class="${allPlaceList.last} ? 'disabled'">
+                                <a th:href="${allPlaceList.last} ? '#' : @{/total_place(page=${allPlaceList.number + 2}, cat=${cat})}" aria-label="Next">
+                                    <span aria-hidden="true">&gt;</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a th:href="@{/total_place(page=${allPlaceList.totalPages}, cat=${cat})}" aria-label="Last">
+                                    <span aria-hidden="true">>></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        <script>
+            $(document).ready(function() {
+                let cat;
+
+                $('.nav-tabs').find('a').click(function(){
+                    cat = $(this).attr('id');
+
+                	$('.pagination').find('a').each(function(idx, item){
+                	    if(idx > 1 && idx < 12){
+                            $(this).attr('href', "/total_place?page=" + $(this).text() +"&cat=" + cat);
+                        }
+                	});
+                });
+            });
+        </script>
+
+    </section>
+
+
+</div>
+</html>
